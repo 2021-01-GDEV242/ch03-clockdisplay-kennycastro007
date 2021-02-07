@@ -9,11 +9,12 @@
  * and reacts by incrementing the display. This is done in the usual clock
  * fashion: the hour increments when the minutes roll over to zero.
  * 
- * @author Michael Kölling and David J. Barnes
- * @version 2016.02.29
+ * @author Kenny Castro-Monroy
+ * @version 2021.02.07
  */
 public class ClockDisplay
 {
+    private boolean isAM;
     private NumberDisplay hours;
     private NumberDisplay minutes;
     private String displayString;    // simulates the actual display
@@ -24,8 +25,9 @@ public class ClockDisplay
      */
     public ClockDisplay()
     {
-        hours = new NumberDisplay(24);
+        hours = new NumberDisplay(12);
         minutes = new NumberDisplay(60);
+        this.isAM = true;
         updateDisplay();
     }
 
@@ -36,9 +38,20 @@ public class ClockDisplay
      */
     public ClockDisplay(int hour, int minute)
     {
-        hours = new NumberDisplay(24);
+        hours = new NumberDisplay(12);
         minutes = new NumberDisplay(60);
-        setTime(hour, minute);
+        if(hour >= 12 && hour != 24)
+        {
+            this.isAM = false;
+        } 
+        else
+        {
+            this.isAM = true;
+        }
+        hours.setValue(hour % 12);
+        minutes.setValue(minute);
+        
+        updateDisplay();
     }
 
     /**
@@ -49,8 +62,14 @@ public class ClockDisplay
     {
         minutes.increment();
         if(minutes.getValue() == 0) {  // it just rolled over!
+            if(hours.getValue() == 11) // If hours is currently 11, it's going to be set to 12 which changes the meridian
+            {
+                this.isAM = this.isAM == true ? false : true; // if isAM is true, make it false, otherwise make it true 
+            }
+                
             hours.increment();
         }
+
         updateDisplay();
     }
 
@@ -62,6 +81,16 @@ public class ClockDisplay
     {
         hours.setValue(hour);
         minutes.setValue(minute);
+
+        if(hour >= 12 && hour != 24)
+        {
+            this.isAM = false;
+        } 
+        else
+        {
+            this.isAM = true;
+        }
+
         updateDisplay();
     }
 
@@ -74,11 +103,20 @@ public class ClockDisplay
     }
     
     /**
+     *  Gets the internal 12-hour representation of time
+     * @return a string representing the time in 12-hour format(HH:MM)
+     */
+    public String get12HourInternalDisplay() 
+    {
+        return displayString;
+    }
+
+    /**
      * Update the internal string that represents the display.
      */
     private void updateDisplay()
     {
-        displayString = hours.getDisplayValue() + ":" + 
-                        minutes.getDisplayValue();
+        String hour = hours.getValue() == 0 ? "12" : hours.getDisplayValue();
+        this.displayString = hour + ":" + minutes.getDisplayValue() + (this.isAM ? " AM" : " PM");
     }
 }

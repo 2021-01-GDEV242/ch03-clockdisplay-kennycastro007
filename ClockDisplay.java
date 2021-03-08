@@ -9,8 +9,8 @@
  * and reacts by incrementing the display. This is done in the usual clock
  * fashion: the hour increments when the minutes roll over to zero.
  * 
- * @author Michael Kölling and David J. Barnes
- * @version 2016.02.29
+ * @author Kenny Castro-Monroy
+ * @version 2017.02.08
  */
 public class ClockDisplay
 {
@@ -73,6 +73,42 @@ public class ClockDisplay
         return displayString;
     }
     
+    /**
+     * Get a display-able time in 12-hour(HH:MM AM/PM) format
+     * @return a String displaing the current time
+     */
+    public String get24HourInternalDisplay() 
+    {
+        boolean isAM;
+        int hour = hours.getValue();
+        if(hour >= 12 && hour != 24)
+        {
+            isAM = false;
+        } 
+        else
+        {
+            isAM = true;
+        }
+
+        hour = hour % 12;
+
+        String hourDisplayString =  String.valueOf(hour);
+
+        if(hour == 0) 
+        {
+            hourDisplayString = "12";
+        } else 
+        {
+            if(hour < 10)
+            {
+                hourDisplayString = "0" + hourDisplayString;
+            }
+        };
+
+        String meridian = isAM ? " AM" : " PM";
+        return hourDisplayString + ":" + minutes.getDisplayValue() + meridian;
+    }
+
     /**
      * Update the internal string that represents the display.
      */
